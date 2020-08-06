@@ -1,0 +1,77 @@
+<head>
+  <script type="module">
+    import { Octokit } from "https://cdn.pika.dev/@octokit/core";
+
+    //TODO: Replace token with environment variable
+    const octokit = new Octokit({
+      auth: `96866c9ced1fb3c5b19a638e9eb185af29835051`,
+    });
+
+    let reactInterval = setInterval(function () {
+      getData("facebook", "react", "React", "react");
+    }, 1000);
+
+    let emberInterval = setInterval(function () {
+      getData("emberjs", "ember.js", "Ember", "ember");
+    }, 1000);
+
+    let angularInterval = setInterval(function () {
+      getData("angular", "angular.js", "Angular", "angular");
+    }, 1000);
+
+    let vueInterval = setInterval(function () {
+      getData("vuejs", "vue", "Vue", "vue");
+    }, 1000);
+
+    async function getData(myOwner, myRepo, myProjName, targetID) {
+      let repoData = await octokit.request("GET /repos/{owner}/{repo}", {
+        owner: myOwner,
+        repo: myRepo,
+      });
+
+      let commitData = await octokit.request(
+        "GET /repos/{owner}/{repo}/stats/participation",
+        {
+          owner: myOwner,
+          repo: myRepo,
+        }
+      );
+
+      let totalCommits = 0;
+
+      for (let index in commitData.data.all) {
+        totalCommits += commitData.data.all[index];
+      }
+
+      let buffer = "";
+
+      let reactCreatedDate = repoData.data.created_at;
+      let daysAge =
+        (Date.now() - Date.parse(reactCreatedDate)) / (24 * 60 * 60 * 1000);
+
+      document.getElementById(targetID).innerHTML =
+        myProjName +
+        ": " +
+        daysAge.toFixed(0) +
+        " days old" +
+        "<br>" +
+        "Forks: " +
+        JSON.stringify(repoData.data.forks) +
+        "<br>" +
+        "Issues: " +
+        repoData.data.open_issues_count +
+        "<br>" +
+        "Commits: " +
+        totalCommits +
+        " (Average " +
+        (daysAge / totalCommits).toFixed(1) +
+        " day(s) between commits)";
+    }
+  </script>
+</head>
+<body>
+  <div id="react"></div>
+  <div id="ember"></div>
+  <div id="angular"></div>
+  <div id="vue"></div>
+</body>
