@@ -101,7 +101,7 @@ function validateEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
-function removeEmail(email) {
+function removeEmail(currEmail) {
   reactVotes.delete(currEmail);
   emberVotes.delete(currEmail);
   angularVotes.delete(currEmail);
@@ -116,7 +116,7 @@ app.post("/votes", (req, res) => {
   if (validateEmail(currEmail)) {
     switch (req.body.vote.trim().toLowerCase()) {
       case "react":
-        removeEmail(email);
+        removeEmail(currEmail);
 
         reactVotes.add(currEmail);
         break;
