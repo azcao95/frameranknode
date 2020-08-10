@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+
+<head>
+  <script>
+    let url = "http://frameranknode-env-1.eba-aes8p9e3.us-east-1.elasticbeanstalk.com/"
+
+    function fillFields(repoData, votes) {
+      let myProjName = repoData.projName;
+      let daysAge = repoData.daysAge;
+      let createdDate = new Date(repoData.createdDate);
+      let totalCommits = repoData.commits;
+      let forks = repoData.forks
+      let issueCount = repoData.issueCount;
+
+      document.getElementById(myProjName).style.display = "block";
+
+      document.getElementById(myProjName + "-header").innerText = myProjName;
+      document.getElementById(myProjName + "-daysAge").innerText = "Created " + daysAge +" days ago on " + createdDate.toLocaleDateString();
+      document.getElementById(myProjName + "-forks").innerText = "Forks: " + forks;
+      document.getElementById(myProjName + "-issues").innerText = "Issues: " + issueCount;
+      document.getElementById(myProjName + "-commits").innerText = "Commits: " + totalCommits + " (Average " + (daysAge / totalCommits).toFixed(1) + " day(s) between commits)";
+      document.getElementById(myProjName + "-votes").innerText = "Votes: " + votes;
+    }
+
+    async function updatePage() {
+      try {
+        let reposResponse = await fetch(url, {
+          method: 'GET',
+        });
+
+        let votesResponse = await fetch(url + "votes", {
+          method: 'GET',
+        });
+
+        let reposData = await reposResponse.json();
+        let votesData = await votesResponse.json();
+
+        let currentTime = new Date(reposData.timestamp);
+
+        document.getElementById("message").innerText = "Updated at: " + currentTime.toLocaleString();
+        fillFields(reposData.react, votesData.react);
+        fillFields(reposData.ember, votesData.ember);
+        fillFields(reposData.angular, votesData.angular);
+        fillFields(reposData.vue, votesData.vue);
+      } catch(err) {
+        console.log(err);
+        document.getElementById("message").textContent = "Error getting data";
+        document.getElementById("React").style.display = "none";
+        document.getElementById("Ember").style.display = "none";
+        document.getElementById("Angular").style.display = "none";
+        document.getElementById("Vue").style.display = "none";
+      }
+      
+    }
+
+    async function submitVote() {
+      let currEmail = document.getElementById("email").value;
+      let currFramework = document.getElementById("framework").value
+
+      try {
+        let voteResponse = await fetch(url + "votes", {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          credentials: 'same-origin',
+          body: JSON.stringify({
+            email: currEmail,
+            vote: currFramework
+          })
+        });
+
+        let voteResponseData = await voteResponse.json();
+
+        alert(voteResponseData.message);
+      } catch (err) {
+        console.log(err);
+        alert('Error submitting vote')
+      }
+    }
+
+    updatePage();
+    let updateInterval = setInterval(function () { updatePage() }, 5000)
+
+  </script>
+  <title>Vote for the Best Framework</title>
+</head>
+<body>
+  <div>
+    <h1>Vote for the best framework:</h1>
+
+    <div id="message"></div>
+    <div id="React">
+      <h3 id="React-header"></h3>
+      <p id="React-daysAge"></p>
+      <p id="React-forks"></p>
+      <p id="React-issues"></p>
+      <p id="React-commits"></p>
+      <p id="React-votes"></p>
+    </div>
+    
+    <div id="Ember">
+      <h3 id="Ember-header"></h3>
+      <p id="Ember-daysAge"></p>
+      <p id="Ember-forks"></p>
+      <p id="Ember-issues"></p>
+      <p id="Ember-commits"></p>
+      <p id="Ember-votes"></p>
+    </div>
+    
+    <div id="Angular">
+      <h3 id="Angular-header"></h3>
+      <p id="Angular-daysAge"></p>
+      <p id="Angular-forks"></p>
+      <p id="Angular-issues"></p>
+      <p id="Angular-commits"></p>
+      <p id="Angular-votes"></p>
+    </div>
+    <div id="Vue">
+      <h3 id="Vue-header"></h3>
+      <p id="Vue-daysAge"></p>
+      <p id="Vue-forks"></p>
+      <p id="Vue-issues"></p>
+      <p id="Vue-commits"></p>
+      <p id="Vue-votes"></p>
+    </div>
+  </div>
+
+  <div>
+    <form>
+      <select id="framework" name="framework">
+        <option value="react">React</option>
+        <option value="ember">Ember</option>
+        <option value="angular">Angular</option>
+        <option value="vue">Vue</option>
+      </select>
+
+      <label for="email">Enter your email:</label>
+      <input type="email" name="email" id="email"/>
+
+      <input type="button" id="submitButton" onclick="submitVote()" value="Submit your vote"></input>
+    </form>
+  </div>
+</body>
