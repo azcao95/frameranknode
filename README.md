@@ -35,3 +35,7 @@ The email in the body is trimmed for whitespace and converted into lowercase. Th
 When a vote's email passes validation, the server then proceeds with some set operations. Votes are stored in the server as hash sets to ensure that no email is recorded more than once for each set of votes.
 
 The server enters a switch statement on the vote's chosen framework. If the value for the chosen framework matches the value for the corresponding set, The server removes the email from each of the four sets. This way, votes can be easily reassigned from one framework to another. Then the email is added to the set corresponding to the value in the request. The server then sends a message to the page saying that the vote has been tallied. If the value in the request does not match any corresponding value for the each of the sets, then no action is taken and a message is sent to the page saying the vote is invalid.
+
+## Instructions for running locally
+
+Set an environment variable "authkey" to your github personal access authentication key. Then navigate to repository directory. Comment out the "url" variable in the frameRank.html and change to "http://localhost:3000/". Then run "node app.js". You then can open the "frameRank.html".
