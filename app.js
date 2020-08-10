@@ -83,6 +83,15 @@ app.get("/", async (req, res) => {
   res.send(payload);
 });
 
+app.get("/votes", (req, res) => {
+  res.send({
+    react: reactVotes.size,
+    ember: emberVotes.size,
+    angular: angularVotes.size,
+    vue: vueVotes.size,
+  });
+});
+
 app.get("/frameRank.html", function (req, res) {
   res.sendFile(__dirname + "/frameRank.html");
 });
