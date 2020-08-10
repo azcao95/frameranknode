@@ -101,28 +101,38 @@ function validateEmail(email) {
   return re.test(String(email).toLowerCase());
 }
 
+function removeEmail(email) {
+  reactVotes.delete(currEmail);
+  emberVotes.delete(currEmail);
+  angularVotes.delete(currEmail);
+  vueVotes.delete(currEmail);
+}
+
 app.post("/votes", (req, res) => {
   console.log("Submitting Vote");
   console.log(req.body);
   let currEmail = req.body.email.toLowerCase();
 
   if (validateEmail(currEmail)) {
-    reactVotes.delete(currEmail);
-    emberVotes.delete(currEmail);
-    angularVotes.delete(currEmail);
-    vueVotes.delete(currEmail);
-
     switch (req.body.vote.trim().toLowerCase()) {
       case "react":
+        removeEmail(email);
+
         reactVotes.add(currEmail);
         break;
       case "ember":
+        removeEmail(email);
+
         emberVotes.add(currEmail);
         break;
       case "angular":
+        removeEmail(email);
+
         angularVotes.add(currEmail);
         break;
       case "vue":
+        removeEmail(email);
+
         vueVotes.add(currEmail);
         break;
       default:
