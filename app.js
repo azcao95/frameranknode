@@ -71,6 +71,7 @@ app.get("/", async (req, res) => {
   ]);
 
   let payload = {
+    timestamp: Date.now(),
     react: reactData,
     ember: emberData,
     angular: angularData,
